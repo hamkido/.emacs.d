@@ -1,0 +1,610 @@
+* emacs config
+** editor
+*** custom
+#+begin_src emacs-lisp
+(blink-cursor-mode -1)
+(fringe-mode 1)
+(ido-mode 1)
+#+end_src
+**** config
+#+begin_src emacs-lisp
+(add-hook 'window-setup-hook 'toggle-frame-maximized t)
+(setq tramp-default-method "ssh")
+(setq make-backup-files nil)
+(use-package dashboard
+  :ensure t
+  :init
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (setq dashboard-startup-banner "~/.emacs.d/banner.txt")
+  (setq dashboard-center-content t)
+  (setq dashboard-items '((recents . 10)
+                          (agenda . 10 )
+                          (bookmarks . 10)
+                          (projects . 10)
+			  ))
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-set-navigator nil)
+  (setq dashboard-item-names '(("Recent Files:" . "Recently opened files:")
+                               ("Agenda for today:" . "Today's agenda:")
+                               ("Agenda for the coming week:" . "Agenda:")))
+  (setq dashboard-show-shortcuts nil)
+  (setq dashboard-set-footer nil)
+  )
+#+end_src
+**** theme
+#+begin_src emacs-lisp
+(use-package all-the-icons
+  :ensure t
+  )
+(use-package doom-themes
+  :ensure t
+  :config
+  (setq doom-themes-enable-bold t)
+  (setq doom-themes-enable-italic t)
+  (load-theme 'doom-one-light t)
+  )
+#+end_src
+***** modeline
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :config
+  (doom-modeline-mode)
+  )
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(use-package nyan-mode
+  :ensure t
+  :config
+  (setq nyan-animate-nyancat t)
+  (setq nyan-wavy-trail t)
+  (nyan-mode)
+  )
+#+end_src
+**** keybinding
+#+begin_src emacs-lisp
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  :config
+  (evil-mode 1)
+  (define-key evil-emacs-state-map [escape] 'evil-normal-state)
+  (define-key evil-insert-state-map "\C-a" 'mwim-beginning)
+  (define-key evil-insert-state-map "\C-e" 'mwim-end)
+  (define-key evil-normal-state-map "\C-a" 'mwim-beginning)
+  (define-key evil-normal-state-map "\C-e" 'mwim-end)
+  (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+  (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+  (setq evil-move-cursor-back nil)
+  (defun switch-to-minibuffer ()
+    (interactive)
+    (if (active-minibuffer-window)
+	(select-window (active-minibuffer-window))
+      (error "Minibuffer is not active")))
+  (global-set-key "\C-co" 'switch-to-minibuffer)
+  )
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+  (evil-collection-init)
+  )
+(use-package mwim
+  :ensure t
+  :after evil
+  :config
+  (require 'mwim)
+  )
+(use-package bind-map
+  :ensure t
+  )
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode 1)
+  )
+(use-package smartparens
+  :ensure t
+  :config
+  (require 'smartparens-config)
+  )
+(use-package multiple-cursors
+  :ensure t
+  )
+#+end_src
+**** file
+#+begin_src emacs-lisp
+(use-package neotree
+  :ensure t
+  :config
+  (global-set-key [f8] 'neotree-project-dir)
+  (setq neo-smart-open t)
+  (setq neo-autorefresh nil)
+  )
+(use-package dired-narrow
+  :ensure t
+  )
+(use-package emacs-everywhere
+  :ensure t
+  )
+(blink-cursor-mode -1)
+(fringe-mode 1)
+(ido-mode 1)
+(setq tramp-default-method "ssh")
+(setq make-backup-files nil)
+(use-package bind-map
+  :ensure t
+  )
+(use-package general
+  :ensure t
+  :config
+  (general-evil-setup t)
+  (general-define-key
+   :states '(normal visual motion emacs)
+   :prefix "SPC"
+   :non-normal-prefix "S-SPC"
+   "" nil
+   "SPC" 'counsel-M-x
+   "b" '(:ignore t :which-key "Buffer")
+   "bB" '(bufler :which-key "buffers")
+   "bb" '(helm-buffers-list :which-key "switch-buffer")
+   "bj" 'bookmark-jump
+   "bs" 'bookmark-set
+   "c" '(:ignore t :which-key "Code")
+   "cg" '(ggtags-create-tags :which-key "ggtags-create-tags")
+   "f"  '(:ignore t :which-key "File")
+   "fd"  '(dired :which-key "dired")
+   "fj" '(counsel-find-files :which-key "find-files")
+   "fs"  'save-buffer
+   "fc" 'save-buffers-kill-terminal
+   "g"  '(:ignore t :which-key "Git")
+   "gc" '(magit-clone :which-key "git clone")
+   "gs" '(magit-status :which-key "git status")
+   "i"  '(:ignore t :which-key "Insert")
+   "iy" 'yankpad-insert
+   "ie" 'yankpad-edit
+   "o" '(:ignore t :which-key "Org")
+   "oa" '(org-agenda)
+   "oS" 'org-insert-structure-template
+   "or" '(org-ql :which-key "org-ql")
+   "os" '(org-store-link :which-key "org-store-link")
+   "p" '(:ignore t :which-key "Projectile")
+   "pO" '(org-projectile-project-todo-completing-read :which-key "org-capture-project")
+   "pS" '(projectile-switch-open-project :which-key "projectile-switch-open-project")
+   "ps" '(projectile-switch-project :which-key "projectile-switch-project")
+   "w" '(:ignore t :which-key "Window")
+   "wH" 'evil-window-split
+   "wL" 'evil-window-vsplit
+   "wh" 'evil-window-left
+   "wj" 'evil-window-down
+   "wk" 'evil-window-up
+   "wl" 'evil-window-right)
+  )
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-mode 1)
+  )
+(use-package ivy
+  :ensure t
+  :config
+  (ivy-mode)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+  (global-set-key "\C-s" 'swiper)
+  (global-set-key (kbd "C-c C-r") 'ivy-resume)
+  (global-set-key (kbd "<f6>") 'ivy-resume)
+  (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+  (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+  (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
+  (global-set-key (kbd "<f1> l") 'counsel-find-library)
+  (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+  (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+  (global-set-key (kbd "C-c g") 'counsel-git)
+  (global-set-key (kbd "C-c j") 'counsel-git-grep)
+  (global-set-key (kbd "C-c k") 'counsel-ag)
+  (global-set-key (kbd "C-x l") 'counsel-locate)
+  (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+  (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+  )
+(use-package ivy-posframe
+  :ensure t
+  :config
+  (require 'ivy-posframe)
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display)))
+  (ivy-posframe-mode 1)
+  )
+(use-package swiper
+  :ensure t
+  )
+(use-package counsel
+  :ensure t
+  )
+(use-package bufler
+  :ensure t
+  :config
+  (evil-collection-define-key 'normal 'bufler-list-mode-map
+    (kbd "RET")   'bufler-list-buffer-switch
+    (kbd "M-RET") 'bufler-list-buffer-peek
+    "D"           'bufler-list-buffer-kill)
+  (setf bufler-groups
+	(bufler-defgroups
+	  (group
+	   (auto-workspace))
+	  (group
+	   (group-or "*Help/Info*"
+		     (mode-match "*Help*" (rx bos "help-"))
+		     (mode-match "*Info*" (rx bos "info-"))))
+	  (group
+	   (group-and "*Special*"
+		      (lambda (buffer)
+			(unless (or (funcall (mode-match "Magit" (rx bos "magit-status"))
+					     buffer)
+				    (funcall (mode-match "Dired" (rx bos "dired"))
+					     buffer)
+				    (funcall (auto-file) buffer))
+			  "*Special*")))
+	   (group
+	    (name-match "**Special**"
+			(rx bos "*" (or "Messages" "Warnings" "scratch" "Backtrace") "*")))
+	   (group
+	    (mode-match "*Magit* (non-status)" (rx bos (or "magit" "forge") "-"))
+	    (auto-directory))
+	   (auto-mode))
+	  (dir user-emacs-directory)
+	  (group
+	   (dir (if (bound-and-true-p org-directory)
+		    org-directory
+		  "~/org"))
+	   (group
+	    (auto-indirect)
+	    (auto-file))
+	   (group-not "*special*" (auto-file))
+	   (auto-mode))
+	  (group
+	   (auto-projectile))
+	  (group
+	   (auto-project))
+	  (auto-directory)
+	  (auto-mode)))
+  )
+(use-package imenu-list
+  :ensure t
+  :config
+  (global-set-key (kbd "C-'") #'imenu-list-smart-toggle)
+  (setq imenu-list-focus-after-activation t)
+  (setq imenu-list-auto-resize t)
+  (setq imenu-list-after-jump-hook nil)
+  )
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+(use-package loccur
+  :ensure t
+  :config
+  (require 'loccur)
+  (define-key global-map [(control o)] 'loccur-current)
+  (define-key global-map [(control meta o)] 'loccur)
+  (define-key global-map [(control shift o)] 'loccur-previous-match)
+  )
+(use-package register-list
+  :ensure t
+  )
+(use-package iregister
+  :ensure t
+  )
+#+end_src
+** time
+*** org
+#+begin_src emacs-lisp
+(use-package org
+  :config
+  (require 'ob-lisp)
+  (require 'ob-sql)
+  (require 'ob-python)
+  (require 'ob-shell)
+  (require 'ob-org)
+  (require 'ob-dot)
+  (evil-collection-define-key
+    'normal 'org-mode-map
+    "t"   'org-todo
+    )
+  (general-define-key
+   :keymaps 'org-agenda-mode-map
+   :states 'normal
+   "j" 'org-agenda-next-item
+   "k" 'org-agenda-previous-item
+   )
+  (bind-map hamki-org-mode-map
+    :keys ("M-m")
+    :evil-keys ("SPC m" ",")
+    :evil-states (normal visual motion)
+    :major-modes (org-mode)
+    :bindings (
+	       "RET" 'org-open-at-point
+	       "rt" 'org-roam-dailies-goto-today
+	       "ry" 'org-roam-dailies-goto-yesterday
+	       "dd" 'org-deadline
+	       "ds" 'org-schedule
+	       "dt" 'org-time-stamp
+	       "," 'org-set-tags-command
+	       "e" 'org-set-effort
+	       "cc" 'org-clock-cancel
+	       "cd" 'org-clock-display
+	       "ce" 'org-evaluate-time-range
+	       "cg" 'org-clock-goto
+	       "ci" 'org-clock-in
+	       "cI" 'org-clock-in-last
+	       "co" 'org-clock-out
+	       "cR" 'org-clock-report
+	       "cr" 'org-resolve-clocks
+	       "p" 'org-priority
+	       "a" 'org-toggle-archive-tag
+	       "A" 'org-archive-subtree
+	       "sh" 'org-promote-subtree
+	       "sj" 'org-move-subtree-down
+	       "sk" 'org-move-subtree-up
+	       "sl" 'org-demote-subtree
+	       "sn" 'org-narrow-to-subtree
+	       "sn" 'org-narrow-to-subtree
+	       "sw" 'widen
+	       "sr" 'org-refile
+	       "ss" 'org-sparse-tree
+	       "sS" 'org-sort
+	       "in" 'org-add-note))
+  )
+(use-package evil-org
+  :ensure t
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org)
+  (require 'evil-org-agenda)
+  )
+(setq org-columns-default-format
+      "%40ITEM %TODO %3PRIORITY %10TAGS %17Effort(Estimated Effort){:} %12CLOCKSUM")
+(setq org-src-tab-acts-natively nil)
+(setq org-src-fontify-natively nil)
+(setq org-agenda-log-mode-items '(closed clock state))
+(setq org-hierarchical-todo-statistics nil)
+(setq org-hierarchical-checkbox-statistics nil)
+(setq org-export-use-babel nil)
+(setq org-highest-priority ?A)
+(setq org-default-priority ?E)
+(setq org-lowest-priority ?V)
+(setq org-global-properties
+      (quote
+      (("Effort_ALL" .
+	 "0 0:10 0:20 0:30 1:00 1:30 2:00 3:00 4:00 6:00 8:00 10:00 20:00 ")
+	("STYLE_ALL" . "habit")
+	("OPTIONS" . "\n:t")))
+      )
+(setq org-agenda-include-diary nil)
+(setq org-refile-allow-creating-parent-nodes 'confirm)
+(setq org-log-into-drawer t)
+(setq org-agenda-start-with-log-mode '(closed clock state))
+(setq org-agenda-start-on-weekday 0)
+(defun org-today ()
+  (interactive)
+  (find-file (shell-command-to-string "printf ~/org/$(date +\"%Y\"-\"%m\"-\"%d\").org"))
+  )
+
+#+end_src
+** data
+#+begin_src emacs-lisp
+(use-package outorg
+  :ensure t)
+(use-package outshine
+  :ensure t
+  :config
+  (setq outshine-temporary-directory "/tmp/")
+  (add-hook 'emacs-lisp-mode-hook 'outshine-mode)
+  )
+
+(use-package blamer
+  :ensure t
+  :bind (("s-i" . blamer-show-commit-info))
+  :defer 20
+  :custom
+  (blamer-idle-time 0.3)
+  :custom-face
+  (blamer-face ((t :foreground "#7a88cf"
+                   :background nil
+                   :height 140
+                   :italic t)))
+  :config
+  (set-face-attribute 'blamer-face nil :height 1.2)
+  (setq blamer-prettify-time-p nil)
+  (setq blamer-max-lines 30)
+  (setq blamer-min-offset 30)
+  )
+#+end_src
+** programming
+*** complete
+#+begin_src emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1)
+  )
+(use-package yasnippet-snippets
+  :ensure t
+  :after (yasnippet))
+(use-package auto-yasnippet
+  :ensure t)
+#+end_src
+*** check
+#+begin_src emacs-lisp
+(use-package flycheck
+  :ensure t
+  :hook (after-init . global-flycheck-mode)
+  :config
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+  (global-set-key [(control c) (f)] 'flyspell-check-previous-highlighted-word)
+  (add-hook 'text-mode-hook 'flyspell-mode)
+  (add-hook 'find-file-hook
+	    (lambda()
+	      (highlight-phrase "\\(BUG\\|FIXME\\|TODO\\|NOTE\\):")))
+
+  (require 'projectile)
+  (add-hook 'prog-mode-hook 'projectile-mode)
+  (setq-default
+   flycheck-disabled-checkers
+   '(javascript-jshint json-jsonlint emacs-lisp-checkdoc)
+   )
+  )
+(use-package flycheck-pos-tip
+  :ensure t
+  :config
+  (with-eval-after-load
+      'flycheck
+    (flycheck-pos-tip-mode)
+    )
+  )
+#+end_src
+*** code-tag
+#+begin_src emacs-lisp
+(use-package ggtags
+  :ensure t)
+  #+end_src
+**** project-manage
+#+begin_src emacs-lisp
+(use-package projectile
+  :ensure t
+  :config
+  (setq
+   projectile-cache-file
+   (expand-file-name ".cache/projectile.cache" user-emacs-directory)
+   )
+  (projectile-mode 1)
+  (define-key projectile-mode-map (kbd "C-c C-p") 'projectile-command-map)
+  (setq projectile-switch-project-action 'neotree-projectile-action
+        projectile-enable-caching t
+        projectile-create-missing-test-files t
+        projectile-switch-project-action #'projectile-commander
+        projectile-ignored-project-function 'file-remote-p)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (projectile-register-project-type
+   'php '("composer.json")
+   :src-dir "src"
+   :test "composer test"
+   :run "composer serve"
+   :test-suffix "Test"
+   :test-dir "tests"
+   )
+  )
+#+end_src
+**** version
+#+begin_src 
+(use-package magit
+  :ensure t
+  :init (require 'magit)
+  :config
+  (setq magit-repository-directories
+	'(
+	  ("~./emacs.d/" . 0)
+	  ("~/Workspace/" . 2)
+	  )
+	)
+  (with-eval-after-load 'projectile
+    (when
+	(require 'magit nil t)
+      (mapc
+       #'projectile-add-known-project
+       (mapcar
+	#'file-name-as-directory
+	(magit-list-repos)
+	)
+       )
+      (projectile-save-known-projects)
+      )
+    )
+  )
+#+end_src
+*** language-mode
+#+begin_src emacs-lisp
+(use-package go-mode
+  :ensure t
+  )
+(use-package rust-mode
+  :ensure t
+  )
+**** config
+(use-package terraform-mode
+  :ensure t)
+(use-package yaml-mode
+  :ensure t
+  )
+(use-package dockerfile-mode
+  :ensure t
+  :config
+  (require 'dockerfile-mode)
+  (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
+  )
+(use-package toml-mode
+  :ensure t)
+(add-hook 'emacs-lisp-mode-hook 'smartparens-mode)
+#+end_src
+***** sign
+#+begin_src emacs-lisp
+(use-package markdown-mode
+  :ensure t)
+(use-package graphviz-dot-mode
+  :ensure t)
+#+end_src
+*** package
+#+begin_src emacs-lisp
+(use-package pkgbuild-mode
+  :ensure t)
+#+end_src
+*** css
+#+begin_src emacs-lisp
+(use-package css-mode
+  :ensure t
+  )
+#+end_src
+*** code-format
+#+begin_src emacs-lisp
+(use-package format-all
+  :ensure t
+  :config
+  (setq format-all-show-errors 'errors)
+  (add-hook 'emacs-lisp-mode-hook 'format-all-mode)
+  (add-hook 'format-all-mode-hook 'format-all-ensure-formatter)
+  )
+					;(use-package sqlite-dump
+					;  :load-path "~/Git-Core/sqlite-dump"
+					;  :init (require 'sqlite-dump)
+					;  (add-to-list 'auto-mode-alist '("\\.db\\'" . sql-mode))
+					;  (add-to-list 'auto-mode-alist '("\\.sqlite3\\'" . sql-mode))
+					;  (add-hook 'sql-mode-hook 'sqlite-dump)
+					;  )
+#+end_src
+
+*** other
+#+begin_src emacs-lisp
+(use-package forge
+  :ensure t
+  :after magit
+  )
+(use-package orgit
+  :ensure t
+  )
+(use-package orgit-forge
+  :ensure t
+  )
+(use-package imenu-anywhere
+  :ensure t
+  )
+(use-package avy
+  :ensure t
+  )
+					;(setq-default flycheck-disabled-checkers '(terraform) )
+(use-package csv-mode
+  :ensure t)
+#+end_src
