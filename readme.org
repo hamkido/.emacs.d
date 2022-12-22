@@ -535,6 +535,8 @@
   :ensure t
   )
 **** config
+(use-package terraform-mode
+  :ensure t)
 (use-package yaml-mode
   :ensure t
   )
@@ -547,11 +549,6 @@
 (use-package toml-mode
   :ensure t)
 (add-hook 'emacs-lisp-mode-hook 'smartparens-mode)
-#+end_src
-**** other
-#+begin_src emacs-lisp
-(use-package csv-mode
-  :ensure t)
 #+end_src
 ***** sign
 #+begin_src emacs-lisp
@@ -587,8 +584,10 @@
 					;  (add-to-list 'auto-mode-alist '("\\.sqlite3\\'" . sql-mode))
 					;  (add-hook 'sql-mode-hook 'sqlite-dump)
 					;  )
-(use-package terraform-mode
-  :ensure t)
+#+end_src
+
+*** other
+#+begin_src emacs-lisp
 (use-package forge
   :ensure t
   :after magit
@@ -606,4 +605,6 @@
   :ensure t
   )
 					;(setq-default flycheck-disabled-checkers '(terraform) )
+(use-package csv-mode
+  :ensure t)
 #+end_src
