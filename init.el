@@ -13,7 +13,7 @@
 (dolist (package my-package-list)
   (unless (package-installed-p package)
     (package-install package)))
-(org-babel-load-file "~/.emacs.d/emacs.org")
+(org-babel-load-file "~/.emacs.d/readme.org")
 ;;;; config
 (set-default-coding-systems 'utf-8)
 (server-start)
